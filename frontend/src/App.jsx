@@ -324,8 +324,8 @@ function App() {
         {/* Repo Scanner Section */}
         <div className="card">
           <h2 className="card-title">🔍 Repository Scanner</h2>
-          <p style={{ color: '#64748b', fontSize: '0.9rem', margin: '0 0 1rem 0' }}>
-            Enter absolute path to a Python repository to parse functions via AST and analyze test coverage.
+          <p style={{ color: '#8b8baa', fontSize: '0.9rem', margin: '0 0 1rem 0' }}>
+            Enter the path to a Python repository to parse functions via AST and analyze test coverage.
           </p>
           <form onSubmit={handleScan} className="scan-form">
             <input
@@ -341,7 +341,7 @@ function App() {
             </button>
           </form>
           {scanError && (
-            <p style={{ color: '#f87171', marginTop: '0.75rem', fontWeight: 500, fontSize: '0.9rem' }}>
+            <p style={{ color: '#f87171', marginTop: '0.75rem', fontWeight: 500, fontSize: '0.9rem', textShadow: '0 0 8px rgba(248,113,113,0.4)' }}>
               ❌ {scanError}
             </p>
           )}
@@ -351,7 +351,7 @@ function App() {
         <div className="grid-container">
           <div className="stat-card">
             <p className="stat-label">Test Coverage</p>
-            <p className="stat-value" style={{ color: '#2563eb' }}>{coveragePercent}%</p>
+            <p className="stat-value" style={{ color: '#c084fc', textShadow: '0 0 12px rgba(192,132,252,0.6)' }}>{coveragePercent}%</p>
             <div className="progress-bar-bg">
               <div
                 className="progress-bar-fill"
@@ -363,19 +363,19 @@ function App() {
           <div className="stat-card">
             <p className="stat-label">Total Functions</p>
             <p className="stat-value">{summary.total_functions_scanned}</p>
-            <p style={{ fontSize: '0.8rem', color: '#64748b', margin: 0 }}>Scanned in codebase</p>
+            <p style={{ fontSize: '0.8rem', color: '#8b8baa', margin: 0 }}>Scanned in codebase</p>
           </div>
 
           <div className="stat-card">
             <p className="stat-label">Untested Functions</p>
-            <p className="stat-value" style={{ color: '#ea580c' }}>{summary.untested_count}</p>
-            <p style={{ fontSize: '0.8rem', color: '#64748b', margin: 0 }}>Missing test files</p>
+            <p className="stat-value" style={{ color: '#f87171', textShadow: '0 0 10px rgba(248,113,113,0.5)' }}>{summary.untested_count}</p>
+            <p style={{ fontSize: '0.8rem', color: '#8b8baa', margin: 0 }}>Missing test files</p>
           </div>
 
           <div className="stat-card">
             <p className="stat-label">Tested Functions</p>
-            <p className="stat-value" style={{ color: '#16a34a' }}>{summary.tested_count}</p>
-            <p style={{ fontSize: '0.8rem', color: '#64748b', margin: 0 }}>Covered by test files</p>
+            <p className="stat-value" style={{ color: '#4ade80', textShadow: '0 0 10px rgba(74,222,128,0.5)' }}>{summary.tested_count}</p>
+            <p style={{ fontSize: '0.8rem', color: '#8b8baa', margin: 0 }}>Covered by test files</p>
           </div>
         </div>
 
@@ -386,12 +386,12 @@ function App() {
             <div style={{ overflowX: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '0.5rem' }}>
                 <thead>
-                  <tr style={{ borderBottom: '2px solid #e2e8f0', textAlign: 'left', color: '#475569', fontSize: '0.9rem' }}>
-                    <th style={{ padding: '0.75rem 0.5rem' }}>Target Function</th>
-                    <th style={{ padding: '0.75rem 0.5rem' }}>Module</th>
-                    <th style={{ padding: '0.75rem 0.5rem' }}>Test File Path</th>
-                    <th style={{ padding: '0.75rem 0.5rem' }}>Status</th>
-                    <th style={{ padding: '0.75rem 0.5rem', textAlign: 'right' }}>Actions</th>
+                  <tr style={{ textAlign: 'left', color: '#8b8baa', fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    <th style={{ padding: '0.75rem 0.5rem', fontWeight: 600 }}>Target Function</th>
+                    <th style={{ padding: '0.75rem 0.5rem', fontWeight: 600 }}>Module</th>
+                    <th style={{ padding: '0.75rem 0.5rem', fontWeight: 600 }}>Test File Path</th>
+                    <th style={{ padding: '0.75rem 0.5rem', fontWeight: 600 }}>Status</th>
+                    <th style={{ padding: '0.75rem 0.5rem', textAlign: 'right', fontWeight: 600 }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -403,15 +403,15 @@ function App() {
 
                     return (
                       <React.Fragment key={idx}>
-                        <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
-                          <td style={{ padding: '0.75rem 0.5rem', fontWeight: 600, color: '#0f172a' }}>
-                            <code>{t.function_name}</code>
+                        <tr>
+                          <td style={{ padding: '0.75rem 0.5rem', fontWeight: 600, color: '#e2d9f3' }}>
+                            <code style={{ color: '#c4b5fd' }}>{t.function_name}</code>
                           </td>
-                          <td style={{ padding: '0.75rem 0.5rem', color: '#475569', fontSize: '0.9rem' }}>
+                          <td style={{ padding: '0.75rem 0.5rem', color: '#8b8baa', fontSize: '0.9rem' }}>
                             {t.module_name}
                           </td>
-                          <td style={{ padding: '0.75rem 0.5rem', color: '#64748b', fontSize: '0.85rem' }}>
-                            <code>{t.test_file_path}</code>
+                          <td style={{ padding: '0.75rem 0.5rem', color: '#6b6b8a', fontSize: '0.82rem' }}>
+                            <code style={{ color: '#7c7ca0' }}>{t.test_file_path}</code>
                           </td>
                           <td style={{ padding: '0.75rem 0.5rem' }}>
                             {t.status === 'passed' && (
@@ -453,28 +453,34 @@ function App() {
                         {/* Inline Code Diff View Drawer */}
                         {diffData && (
                           <tr>
-                            <td colSpan={5} style={{ padding: '1rem', backgroundColor: '#0f172a', borderRadius: '0.5rem' }}>
-                              <div style={{ color: '#f8fafc' }}>
+                            <td colSpan={5} style={{ padding: '1rem' }}>
+                              <div style={{
+                                background: 'rgba(147,51,234,0.07)',
+                                border: '1px solid rgba(147,51,234,0.35)',
+                                borderRadius: '12px',
+                                padding: '1.25rem',
+                                backdropFilter: 'blur(8px)',
+                              }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                                  <h4 style={{ margin: 0, fontSize: '1rem', color: '#38bdf8', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                    💡 Suggested Fix & Root Cause Analysis
+                                  <h4 style={{ margin: 0, fontSize: '1rem', color: '#c084fc', display: 'flex', alignItems: 'center', gap: '0.5rem', textShadow: '0 0 8px rgba(192,132,252,0.4)' }}>
+                                    💡 Suggested Fix &amp; Root Cause Analysis
                                   </h4>
-                                  <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>Target Function: <code>{diffData.function_name}</code></span>
+                                  <span style={{ fontSize: '0.8rem', color: '#8b8baa' }}>Target Function: <code style={{ color: '#c4b5fd' }}>{diffData.function_name}</code></span>
                                 </div>
-                                
-                                <p style={{ margin: '0 0 1rem 0', color: '#cbd5e1', fontSize: '0.9rem', lineHeight: 1.5 }}>
-                                  <strong>Explanation:</strong> {diffData.explanation}
+  
+                                <p style={{ margin: '0 0 1rem 0', color: '#ccc8e8', fontSize: '0.9rem', lineHeight: 1.6 }}>
+                                  <strong style={{ color: '#e2d9f3' }}>Explanation:</strong> {diffData.explanation}
                                 </p>
-
-                                <div style={{ backgroundColor: '#1e293b', border: '1px solid #334155', borderRadius: '0.375rem', overflow: 'hidden', marginBottom: '1.25rem' }}>
-                                  <div style={{ padding: '0.4rem 0.8rem', backgroundColor: '#020617', borderBottom: '1px solid #334155', color: '#94a3b8', fontSize: '0.8rem', fontWeight: 600 }}>
+  
+                                <div style={{ background: 'rgba(0,0,0,0.45)', border: '1px solid rgba(147,51,234,0.2)', borderRadius: '8px', overflow: 'hidden', marginBottom: '1.25rem' }}>
+                                  <div style={{ padding: '0.4rem 0.8rem', background: 'rgba(0,0,0,0.5)', borderBottom: '1px solid rgba(147,51,234,0.2)', color: '#8b8baa', fontSize: '0.78rem', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
                                     Unified Diff View
                                   </div>
                                   <div style={{ padding: '0.5rem 0', overflowX: 'auto', fontFamily: 'Consolas, Monaco, "Andale Mono", monospace', fontSize: '0.875rem' }}>
                                     {renderDiffLines(diffData.diff)}
                                   </div>
                                 </div>
-
+  
                                 <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end' }}>
                                   <button
                                     type="button"
@@ -489,7 +495,7 @@ function App() {
                                     type="button"
                                     className="btn-sm"
                                     onClick={() => handleRejectFix(t.test_file_path)}
-                                    style={{ padding: '0.5rem 1.25rem', fontSize: '0.875rem', backgroundColor: '#334155', color: '#ffffff', border: 'none' }}
+                                    style={{ padding: '0.5rem 1.25rem', fontSize: '0.875rem' }}
                                   >
                                     ❌ Reject
                                   </button>
@@ -505,7 +511,7 @@ function App() {
               </table>
             </div>
           ) : (
-            <p style={{ color: '#64748b', margin: 0, fontSize: '0.95rem' }}>
+            <p style={{ color: '#8b8baa', margin: 0, fontSize: '0.95rem' }}>
               No tests generated yet. Click "Generate Tests" next to any untested function below.
             </p>
           )}
@@ -518,25 +524,25 @@ function App() {
             <div style={{ overflowX: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '0.5rem' }}>
                 <thead>
-                  <tr style={{ borderBottom: '2px solid #e2e8f0', textAlign: 'left', color: '#475569', fontSize: '0.9rem' }}>
-                    <th style={{ padding: '0.75rem 0.5rem' }}>Function</th>
-                    <th style={{ padding: '0.75rem 0.5rem' }}>File</th>
-                    <th style={{ padding: '0.75rem 0.5rem' }}>Line</th>
-                    <th style={{ padding: '0.75rem 0.5rem' }}>Expected Test File</th>
-                    <th style={{ padding: '0.75rem 0.5rem', textAlign: 'right' }}>Action</th>
+                  <tr style={{ textAlign: 'left', color: '#8b8baa', fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    <th style={{ padding: '0.75rem 0.5rem', fontWeight: 600 }}>Function</th>
+                    <th style={{ padding: '0.75rem 0.5rem', fontWeight: 600 }}>File</th>
+                    <th style={{ padding: '0.75rem 0.5rem', fontWeight: 600 }}>Line</th>
+                    <th style={{ padding: '0.75rem 0.5rem', fontWeight: 600 }}>Expected Test File</th>
+                    <th style={{ padding: '0.75rem 0.5rem', textAlign: 'right', fontWeight: 600 }}>Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   {untestedFunctions.map((fn, idx) => {
                     const isGenerating = generatingMap[fn.function];
                     return (
-                      <tr key={idx} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                        <td style={{ padding: '0.75rem 0.5rem', fontWeight: 600, color: '#0f172a' }}>
-                          <code>{fn.function}({fn.args?.join(', ')})</code>
+                      <tr key={idx}>
+                        <td style={{ padding: '0.75rem 0.5rem', fontWeight: 600 }}>
+                          <code style={{ color: '#c4b5fd' }}>{fn.function}({fn.args?.join(', ')})</code>
                         </td>
-                        <td style={{ padding: '0.75rem 0.5rem', color: '#475569', fontSize: '0.9rem' }}>{fn.file}</td>
-                        <td style={{ padding: '0.75rem 0.5rem', color: '#475569', fontSize: '0.9rem' }}>L{fn.line}</td>
-                        <td style={{ padding: '0.75rem 0.5rem', color: '#94a3b8', fontStyle: 'italic', fontSize: '0.9rem' }}>
+                        <td style={{ padding: '0.75rem 0.5rem', color: '#8b8baa', fontSize: '0.9rem' }}>{fn.file}</td>
+                        <td style={{ padding: '0.75rem 0.5rem', color: '#8b8baa', fontSize: '0.9rem' }}>L{fn.line}</td>
+                        <td style={{ padding: '0.75rem 0.5rem', color: '#6b6b8a', fontStyle: 'italic', fontSize: '0.9rem' }}>
                           {fn.matching_test_file}
                         </td>
                         <td style={{ padding: '0.75rem 0.5rem', textAlign: 'right' }}>
@@ -556,7 +562,7 @@ function App() {
               </table>
             </div>
           ) : (
-            <p style={{ color: '#64748b', margin: 0, fontSize: '0.95rem' }}>
+            <p style={{ color: '#8b8baa', margin: 0, fontSize: '0.95rem' }}>
               No untested functions detected. Click "Scan Repository" above to discover untested functions.
             </p>
           )}
