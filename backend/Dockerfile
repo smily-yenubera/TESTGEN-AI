@@ -20,6 +20,10 @@ COPY --from=deps /usr/local/bin /usr/local/bin
 # Copy application source.
 COPY app/ ./app/
 
+# Copy the demo repository so it is available inside the container at /app/demo_repo.
+# Users can type "demo_repo" (or "/app/demo_repo") in the UI to scan it.
+COPY demo_repo/ ./demo_repo/
+
 # Render and Railway both inject a PORT environment variable.
 # We default to 8000 for local Docker runs.
 ENV PORT=8000

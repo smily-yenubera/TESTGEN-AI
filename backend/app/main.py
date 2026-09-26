@@ -15,6 +15,26 @@ from app.state import dashboard_state
 
 app = FastAPI(title="TestGen AI Backend")
 
+# The working directory inside the Docker container is /app (set by WORKDIR in
+# the Dockerfile).  When users type a bare name like "demo_repo" in the UI we
+# resolve it relative to this directory so paths work identically on every
+# platform and deployment target.
+_APP_DIR = Path(__file__).resolve().parent.parent
+
+
+def _resolve_path(raw: str) -> Path:
+    """Resolve a raw path string to an absolute Path.
+
+    - Absolute paths are used as-is (covers /app/demo_repo or C:\\... locally).
+    - Relative paths are resolved relative to _APP_DIR so that "demo_repo"
+      becomes /app/demo_repo inside the container and the equivalent local path
+      during development.
+    """
+    p = Path(raw)
+    if p.is_absolute():
+        return p
+    return (_APP_DIR / p).resolve()
+
 # Allow the set of permitted CORS origins to be configured via an environment
 # variable so that the deployed frontend URL can be injected at runtime without
 # code changes.  Falls back to localhost for local development.
@@ -70,7 +90,7 @@ def dashboard_data_endpoint():
 @app.post("/scan")
 def scan_endpoint(request: ScanRequest):
     try:
-        full_res = scan_repo_full(request.path)
+        full_res = scan_repo_full(str(_resolve_path(request.path)))
         untested_functions = full_res["untested_functions"]
         
         dashboard_state.update_scan(
@@ -116,7 +136,7 @@ def _find_function_in_repo(repo_path: Path, function_name: str, file_path_hint: 
 
 @app.post("/generate-tests")
 def generate_tests_endpoint(request: GenerateTestsRequest):
-    repo_path = Path(request.repo_path).resolve()
+    repo_path = _resolve_path(request.repo_path)
     if not repo_path.exists() or not repo_path.is_dir():
         raise HTTPException(status_code=400, detail=f"Repository path does not exist: {request.repo_path}")
 

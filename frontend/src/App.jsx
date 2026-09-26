@@ -5,7 +5,7 @@ const Spinner = () => <span className="spinner"></span>;
 
 function App() {
   const [connectionStatus, setConnectionStatus] = useState('connecting');
-  const [repoPath, setRepoPath] = useState('C:\\Testgen-ai\\demo_repo');
+  const [repoPath, setRepoPath] = useState('demo_repo');
   const [scanning, setScanning] = useState(false);
   const [scanError, setScanError] = useState('');
   const [dashboardData, setDashboardData] = useState(null);
