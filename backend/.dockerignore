@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.eggs/
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Tests (not needed in the production image)
+tests/
+scratch/
+.pytest_cache/
+
+# Local env files
+.env
+.env.*
+
+# Editor / OS artefacts
+.DS_Store
+Thumbs.db
+*.swp

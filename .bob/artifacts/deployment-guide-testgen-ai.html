@@ -1,0 +1,226 @@
+
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Deployment Guide — TestGen AI</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #1f2328;
+    background: #ffffff;
+    padding: 32px 16px 48px;
+  }
+  .page { max-width: 760px; margin: 0 auto; }
+  h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+  .subtitle { color: #57606a; margin-bottom: 32px; font-size: 13px; }
+  h2 { font-size: 16px; font-weight: 700; margin: 28px 0 10px; display: flex; align-items: center; gap: 8px; }
+  h2 .badge {
+    font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 12px;
+    background: #f7f8fa; border: 1px solid #e5e7eb; color: #57606a; letter-spacing: 0.02em;
+  }
+  h3 { font-size: 13px; font-weight: 600; margin: 18px 0 6px; color: #1f2328; }
+  p { margin-bottom: 8px; color: #1f2328; }
+  ol, ul { padding-left: 20px; margin-bottom: 8px; }
+  li { margin-bottom: 5px; }
+  code {
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    font-size: 12.5px;
+    background: #f7f8fa;
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+    padding: 1px 5px;
+  }
+  .env-table { width: 100%; border-collapse: collapse; margin: 10px 0 16px; }
+  .env-table th, .env-table td {
+    text-align: left; padding: 7px 10px;
+    border: 1px solid #e5e7eb; font-size: 13px;
+  }
+  .env-table th { background: #f7f8fa; font-weight: 600; }
+  .env-table tr:hover td { background: #fafbfc; }
+  .required { color: #cf222e; font-size: 11px; font-weight: 600; }
+  .optional { color: #57606a; font-size: 11px; }
+  .step {
+    background: #f7f8fa; border: 1px solid #e5e7eb; border-radius: 6px;
+    padding: 14px 16px; margin-bottom: 10px;
+  }
+  .step-num { font-weight: 700; color: #3b82d4; margin-right: 6px; }
+  .note {
+    background: #fffbf0; border-left: 3px solid #d4a017;
+    padding: 10px 14px; border-radius: 0 4px 4px 0; margin: 12px 0; font-size: 13px;
+  }
+  .divider { border: none; border-top: 1px solid #e5e7eb; margin: 28px 0; }
+  .file-tag { color: #7c5cd8; font-weight: 600; }
+  footer {
+    margin-top: 48px; padding-top: 14px; border-top: 1px solid #e5e7eb;
+    text-align: center; font-size: 12px; color: #57606a;
+  }
+  .section-intro { color: #57606a; font-size: 13px; margin-bottom: 14px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <h1>Deployment Guide — TestGen AI</h1>
+  <p class="subtitle">Backend → Render (free tier)  |  Frontend → Vercel</p>
+
+  
+  <h2>Files changed by this setup</h2>
+  <ul>
+    <li><span class="file-tag">backend/Dockerfile</span> — multi-stage build, reads <code>PORT</code> from env</li>
+    <li><span class="file-tag">backend/.dockerignore</span> — excludes venv, tests, .env from image</li>
+    <li><span class="file-tag">backend/.env.example</span> — template for local secrets</li>
+    <li><span class="file-tag">backend/requirements.txt</span> — added <code>google-genai</code>, <code>uvicorn[standard]</code>, <code>pytest-json-report</code></li>
+    <li><span class="file-tag">backend/app/main.py</span> — CORS origins read from <code>ALLOWED_ORIGINS</code> env var</li>
+    <li><span class="file-tag">frontend/src/config.js</span> — API URL reads from <code>VITE_API_BASE_URL</code> at build time</li>
+    <li><span class="file-tag">frontend/vite.config.js</span> — explicit <code>build.outDir: 'dist'</code> for Vercel</li>
+    <li><span class="file-tag">frontend/.env.example</span> — template for local env</li>
+    <li><span class="file-tag">.gitignore</span> — excludes venv, node_modules, .env, dist</li>
+  </ul>
+
+  <hr class="divider" />
+
+  
+  <h2>Pre-flight checklist</h2>
+  <ul>
+    <li>Code is pushed to a GitHub (or GitLab) repository that Render/Vercel can access.</li>
+    <li>You have a Gemini API key from <code>aistudio.google.com</code>.</li>
+    <li>You have a Render account and a Vercel account (both free).</li>
+  </ul>
+
+  <hr class="divider" />
+
+  
+  <h2>Part 1 — Deploy Backend to Render <span class="badge">Render · free tier</span></h2>
+  <p class="section-intro">Render will build your Docker image and run it as a Web Service. The free tier spins down after 15 minutes of inactivity — the first request after that will be slow (~30 s). Upgrade to a paid instance to avoid cold starts.</p>
+
+  <div class="step">
+    <span class="step-num">1</span>Go to <strong>render.com → New → Web Service</strong>. Connect your GitHub/GitLab account and select the repository.
+  </div>
+  <div class="step">
+    <span class="step-num">2</span>
+    Fill in the service settings:
+    <ul style="margin-top:6px">
+      <li><strong>Name:</strong> <code>testgen-ai-backend</code> (or any name you like)</li>
+      <li><strong>Root Directory:</strong> <code>backend</code></li>
+      <li><strong>Runtime:</strong> <code>Docker</code> — Render detects the Dockerfile automatically</li>
+      <li><strong>Region:</strong> pick the closest to your users</li>
+      <li><strong>Instance Type:</strong> <em>Free</em></li>
+    </ul>
+  </div>
+  <div class="step">
+    <span class="step-num">3</span>Under <strong>Environment Variables</strong>, add the following:
+
+    <table class="env-table" style="margin-top:10px">
+      <thead><tr><th>Variable</th><th>Value</th><th>Required?</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><code>GEMINI_API_KEY</code></td>
+          <td>Your Gemini API key (from aistudio.google.com)</td>
+          <td><span class="required">Required</span></td>
+        </tr>
+        <tr>
+          <td><code>ALLOWED_ORIGINS</code></td>
+          <td>Your Vercel frontend URL — e.g. <code>https://testgen-ai.vercel.app</code><br />Add after the frontend is deployed. Can be a comma-separated list.</td>
+          <td><span class="required">Required</span></td>
+        </tr>
+        <tr>
+          <td><code>PORT</code></td>
+          <td>Render injects this automatically — <strong>do not set it manually</strong>.</td>
+          <td><span class="optional">Auto-set</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="step">
+    <span class="step-num">4</span>Click <strong>Create Web Service</strong>. Render builds the Docker image and deploys it. Wait for the status to show <em>Live</em>.
+  </div>
+  <div class="step">
+    <span class="step-num">5</span>Copy your service URL — it looks like <code>https://testgen-ai-backend.onrender.com</code>. You'll need it for the frontend step.
+  </div>
+  <div class="step">
+    <span class="step-num">6</span>Verify the API is up: open <code>https://&lt;your-service&gt;.onrender.com/health</code> in a browser — you should see <code>{"status":"ok"}</code>.
+  </div>
+
+  <div class="note">
+    <strong>Note on cold starts:</strong> If you're demoing the app, hit <code>/health</code> in your browser ~30 seconds before so the instance is warm.
+  </div>
+
+  <hr class="divider" />
+
+  
+  <h2>Part 2 — Deploy Frontend to Vercel <span class="badge">Vercel · hobby (free)</span></h2>
+  <p class="section-intro">Vercel detects the Vite project, runs <code>npm run build</code>, and serves the <code>dist/</code> output as a global CDN.</p>
+
+  <div class="step">
+    <span class="step-num">1</span>Go to <strong>vercel.com → New Project</strong>. Import your repository.
+  </div>
+  <div class="step">
+    <span class="step-num">2</span>
+    Configure the project:
+    <ul style="margin-top:6px">
+      <li><strong>Framework Preset:</strong> <em>Vite</em> (auto-detected, or select manually)</li>
+      <li><strong>Root Directory:</strong> <code>frontend</code></li>
+      <li><strong>Build Command:</strong> <code>npm run build</code> (default)</li>
+      <li><strong>Output Directory:</strong> <code>dist</code> (default)</li>
+      <li><strong>Install Command:</strong> <code>npm install</code> (default)</li>
+    </ul>
+  </div>
+  <div class="step">
+    <span class="step-num">3</span>Under <strong>Environment Variables</strong>, add:
+
+    <table class="env-table" style="margin-top:10px">
+      <thead><tr><th>Variable</th><th>Value</th><th>Required?</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><code>VITE_API_BASE_URL</code></td>
+          <td>Your Render backend URL — e.g. <code>https://testgen-ai-backend.onrender.com</code> (no trailing slash)</td>
+          <td><span class="required">Required</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="step">
+    <span class="step-num">4</span>Click <strong>Deploy</strong>. Vercel installs dependencies, runs <code>vite build</code>, and publishes the <code>dist/</code> folder.
+  </div>
+  <div class="step">
+    <span class="step-num">5</span>After the deployment succeeds, note your Vercel URL — e.g. <code>https://testgen-ai.vercel.app</code>.
+  </div>
+  <div class="step">
+    <span class="step-num">6</span><strong>Go back to Render</strong> and update the <code>ALLOWED_ORIGINS</code> environment variable to your Vercel URL. Render will redeploy automatically.
+  </div>
+
+  <hr class="divider" />
+
+  
+  <h2>Local development (after deployment setup)</h2>
+  <h3>Backend</h3>
+  <ol>
+    <li>Copy <code>backend/.env.example</code> → <code>backend/.env</code> and fill in your <code>GEMINI_API_KEY</code>.</li>
+    <li>Set <code>ALLOWED_ORIGINS=http://localhost:3000</code> in <code>backend/.env</code>.</li>
+    <li>Run: <code>cd backend &amp;&amp; uvicorn app.main:app --reload --port 8000</code></li>
+  </ol>
+  <h3>Frontend</h3>
+  <ol>
+    <li>Copy <code>frontend/.env.example</code> → <code>frontend/.env</code>.</li>
+    <li>Leave <code>VITE_API_BASE_URL</code> unset (or set it to <code>http://localhost:8000</code>) — the config falls back automatically.</li>
+    <li>Run: <code>cd frontend &amp;&amp; npm run dev</code></li>
+  </ol>
+
+  <hr class="divider" />
+
+  
+  <h2>Redeploying after code changes</h2>
+  <ul>
+    <li><strong>Render:</strong> every push to your default branch triggers an automatic Docker rebuild and redeploy.</li>
+    <li><strong>Vercel:</strong> every push triggers a new build. Pull-request branches get preview URLs automatically.</li>
+    <li>If you update <code>ALLOWED_ORIGINS</code> on Render, trigger a manual redeploy via the dashboard (or push any commit).</li>
+  </ul>
+
+  <footer>Made with IBM Bob</footer>
+</div>
+</body>
+</html>
